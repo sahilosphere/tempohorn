@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Horn Please 🛺</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@500;700;800&family=Space+Mono:wght@400;700&family=Inter:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --rick-yellow: #F2B705;
+    --rick-black: #17140F;
+    --panel-black: #201B14;
+    --bulb-red: #B5292E;
+    --bulb-red-dark: #7E1B1F;
+    --plate-cream: #EFE4C8;
+    --rust: #6B4A2B;
+    --chrome: #C9C2B0;
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    margin: 0;
+    min-height: 100%;
+    background: var(--rick-black);
+    font-family: 'Inter', sans-serif;
+    color: var(--plate-cream);
+  }
+
+  body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-bottom: 40px;
+  }
+
+  /* reflective hazard tape strip */
+  .tape {
+    width: 100%;
+    height: 14px;
+    background: repeating-linear-gradient(
+      135deg,
+      var(--rick-yellow) 0 18px,
+      #1a1a1a 18px 36px
+    );
+    flex-shrink: 0;
+  }
+
+  header {
+    width: 100%;
+    background: var(--rick-yellow);
+    color: var(--rick-black);
+    padding: 28px 20px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+    flex-wrap: wrap;
+    border-bottom: 6px solid var(--rick-black);
+  }
+
+  .plate {
+    background: #0E3B1E;
+    color: #EFE9D8;
+    font-family: 'Space Mono', monospace;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 2px;
+    padding: 6px 10px;
+    border: 2px solid #EFE9D8;
+    border-radius: 3px;
+    transform: rotate(-2deg);
+    white-space: nowrap;
+  }
+
+  .plate.right { transform: rotate(2deg); }
+
+  .title-block {
+    text-align: center;
+  }
+
+  h1 {
+    font-family: 'Baloo 2', sans-serif;
+    font-weight: 800;
+    font-size: clamp(2.2rem, 6vw, 3.4rem);
+    margin: 0;
+    line-height: 1;
+    letter-spacing: 0.5px;
+    text-shadow: 2px 2px 0 rgba(255,255,255,0.35);
+  }
+
+  .tagline {
+    font-style: italic;
+    font-size: 0.95rem;
+    margin-top: 6px;
+    color: #3a2c0d;
+    font-weight: 600;
+  }
+
+  main {
+    width: 100%;
+    max-width: 780px;
+    padding: 36px 20px 10px;
+  }
+
+  .console {
+    background: var(--panel-black);
+    border: 3px solid #000;
+    border-radius: 18px;
+    padding: 36px 20px 28px;
+    box-shadow:
+      inset 0 0 0 2px rgba(201,194,176,0.08),
+      0 20px 40px rgba(0,0,0,0.5);
+    position: relative;
+  }
+
+  .console::before {
+    content: "";
+    position: absolute;
+    inset: 10px;
+    border: 1px dashed rgba(201,194,176,0.15);
+    border-radius: 12px;
+    pointer-events: none;
+  }
+
+  .rivet {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 35% 35%, #d8d2c2, #3a3427 70%);
+  }
+  .rivet.tl { top: 12px; left: 12px; }
+  .rivet.tr { top: 12px; right: 12px; }
+  .rivet.bl { bottom: 12px; left: 12px; }
+  .rivet.br { bottom: 12px; right: 12px; }
+
+  .horn-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 22px 16px;
+  }
+
+  @media (max-width: 560px) {
+    .horn-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+
+  .horn-unit {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .bulb-btn {
+    -webkit-tap-highlight-color: transparent;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 6px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transform-origin: center bottom;
+    transition: transform 0.05s ease;
+  }
+
+  .bulb-btn:focus-visible {
+    outline: 3px solid var(--rick-yellow);
+    outline-offset: 4px;
+    border-radius: 50%;
+  }
+
+  .bulb {
+    width: 62px;
+    height: 62px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 32% 28%, #e05a56, var(--bulb-red) 55%, var(--bulb-red-dark) 100%);
+    box-shadow:
+      inset -4px -6px 10px rgba(0,0,0,0.35),
+      inset 3px 4px 6px rgba(255,255,255,0.15),
+      0 6px 10px rgba(0,0,0,0.4);
+    position: relative;
+  }
+
+  .neck {
+    width: 12px;
+    height: 20px;
+    background: linear-gradient(#8a8378, #56503f);
+    margin-top: -2px;
+    border-radius: 2px;
+  }
+
+  .bulb-btn:active .bulb,
+  .bulb-btn.squish .bulb {
+    animation: squish 0.28s ease-out;
+  }
+
+  @keyframes squish {
+    0%   { transform: scaleY(1) scaleX(1); }
+    30%  { transform: scaleY(0.7) scaleX(1.18); }
+    60%  { transform: scaleY(1.08) scaleX(0.95); }
+    100% { transform: scaleY(1) scaleX(1); }
+  }
+
+  .horn-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.5px;
+    color: var(--plate-cream);
+    background: #2c261a;
+    border: 1px solid rgba(201,194,176,0.25);
+    padding: 3px 8px;
+    border-radius: 4px;
+    text-align: center;
+  }
+
+  .horn-sub {
+    font-size: 0.72rem;
+    color: #a89a78;
+    text-align: center;
+    max-width: 110px;
+  }
+
+  .meter {
+    margin-top: 34px;
+    width: 100%;
+    max-width: 780px;
+    background: #0E3B1E;
+    border: 3px solid #000;
+    border-radius: 12px;
+    padding: 14px 22px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-family: 'Space Mono', monospace;
+    color: #d7f5df;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .meter-label {
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+    color: #9fd3ac;
+  }
+
+  .meter-digits {
+    font-size: 1.5rem;
+    font-weight: 700;
+    background: #05170b;
+    padding: 4px 12px;
+    border-radius: 4px;
+    letter-spacing: 3px;
+  }
+
+  .about {
+    margin-top: 36px;
+    width: 100%;
+    max-width: 780px;
+    padding: 0 20px;
+  }
+
+  .about-panel {
+    background: var(--panel-black);
+    border: 3px solid #000;
+    border-radius: 14px;
+    padding: 26px 24px;
+    display: grid;
+    grid-template-columns: 1.3fr 1fr;
+    gap: 28px;
+  }
+
+  @media (max-width: 620px) {
+    .about-panel { grid-template-columns: 1fr; }
+  }
+
+  .about-panel h2 {
+    font-family: 'Baloo 2', sans-serif;
+    font-size: 1.3rem;
+    margin: 0 0 10px;
+    color: var(--rick-yellow);
+  }
+
+  .about-panel p {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: #cfc5a9;
+    margin: 0 0 10px;
+  }
+
+  .id-card {
+    background: #0E3B1E;
+    border: 2px solid #EFE9D8;
+    border-radius: 8px;
+    padding: 14px 16px;
+    align-self: start;
+  }
+
+  .id-card-header {
+    font-family: 'Space Mono', monospace;
+    font-size: 0.7rem;
+    letter-spacing: 2px;
+    color: #9fd3ac;
+    border-bottom: 1px solid rgba(239,233,216,0.3);
+    padding-bottom: 8px;
+    margin-bottom: 8px;
+  }
+
+  .id-card-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    font-size: 0.82rem;
+    padding: 5px 0;
+  }
+
+  .id-card-row span:first-child {
+    color: #9fd3ac;
+  }
+
+  .id-card-row span:last-child {
+    color: #EFE9D8;
+    font-family: 'Space Mono', monospace;
+    text-align: right;
+  }
+
+  .copyright {
+    margin-top: 18px;
+    text-align: center;
+    font-size: 0.75rem;
+    color: #6b6249;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .bulb-btn.squish .bulb, .bulb-btn:active .bulb { animation: none; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="tape"></div>
+
+  <header>
+    <div class="plate">DL 1 RT 7860</div>
+    <div class="title-block">
+      <h1>Horn Please 🛺</h1>
+      <div class="tagline">Press it. Hear it. Filmy horn console.</div>
+    </div>
+    <div class="plate right">TATA MAGIC</div>
+  </header>
+
+  <main>
+    <div class="console">
+      <div class="rivet tl"></div>
+      <div class="rivet tr"></div>
+      <div class="rivet bl"></div>
+      <div class="rivet br"></div>
+
+      <div class="horn-grid" id="hornGrid">
+        <!-- horn units injected by JS -->
+      </div>
+    </div>
+
+    <div class="meter">
+      <span class="meter-label">TOTAL HORNS HONKED TODAY</span>
+      <span class="meter-digits" id="counter">000000</span>
+    </div>
+  </main>
+
+  <section class="about">
+    <div class="about-panel">
+      <div>
+        <h2>About This Rickshaw</h2>
+        <p>Horn Please is a small browser toy built for anyone who loves the chaos and character of Indian street horns. Every sound is synthesized live using the Web Audio API — no audio files, no downloads, no external API.</p>
+        <p>Tap a horn, watch the meter climb, and enjoy a bit of filmy street energy from wherever you are.</p>
+      </div>
+      <div class="id-card">
+        <div class="id-card-header">DRIVER ID</div>
+        <div class="id-card-row"><span>Built by</span><span>Sahil Singh</span></div>
+        <div class="id-card-row"><span>Email</span><span>sahilosphere@gmail.com</span></div>
+        <div class="id-card-row"><span>Website</span><span>tempohorn</span></div>
+        <div class="id-card-row"><span>Route</span><span>Anywhere, India</span></div>
+      </div>
+    </div>
+    <div class="copyright">© 2026 Horn Please — built for fun, not for actual traffic.</div>
+  </section>
+
+<script>
+  const horns = [
+    { name: "POOM POOM", sub: "Classic Bulb Horn", play: classicPoomPoom },
+    { name: "PEE-POO-PEE", sub: "Musical Signal", play: filmyPeepoo },
+    { name: "AAOOOGAA", sub: "Vintage Ambassador", play: aaooogaa },
+    { name: "WEDDING HORN", sub: "Baraat Special", play: weddingHorn },
+    { name: "VIP SIREN", sub: "Convoy Alert", play: vipSiren },
+    { name: "RAPID FIRE", sub: "Traffic Hustle", play: rapidFire },
+  ];
+
+  const grid = document.getElementById('hornGrid');
+  const counterEl = document.getElementById('counter');
+  let count = 0;
+
+  horns.forEach((h, i) => {
+    const unit = document.createElement('div');
+    unit.className = 'horn-unit';
+    unit.innerHTML = `
+      <button class="bulb-btn" aria-label="Play ${h.name} horn">
+        <div class="bulb"></div>
+        <div class="neck"></div>
+      </button>
+      <div class="horn-label">${h.name}</div>
+      <div class="horn-sub">${h.sub}</div>
+    `;
+    const btn = unit.querySelector('.bulb-btn');
+    btn.addEventListener('click', () => {
+      h.play();
+      count++;
+      counterEl.textContent = String(count).padStart(6, '0');
+      btn.classList.remove('squish');
+      void btn.offsetWidth; // restart animation
+      btn.classList.add('squish');
+    });
+    grid.appendChild(unit);
+  });
+
+  // ---- Web Audio synthesis: layered, filtered, distorted for a real horn timbre ----
+  let audioCtx, masterBus, noiseBuffer;
+
+  function getCtx() {
+    if (!audioCtx) {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+      // master bus: soft-clip distortion -> compressor -> destination
+      const shaper = audioCtx.createWaveShaper();
+      shaper.curve = makeClipCurve(6);
+      shaper.oversample = '4x';
+
+      const comp = audioCtx.createDynamicsCompressor();
+      comp.threshold.value = -18;
+      comp.knee.value = 18;
+      comp.ratio.value = 6;
+      comp.attack.value = 0.002;
+      comp.release.value = 0.15;
+
+      shaper.connect(comp).connect(audioCtx.destination);
+      masterBus = shaper;
+
+      noiseBuffer = makeNoiseBuffer(audioCtx);
+    }
+    if (audioCtx.state === 'suspended') audioCtx.resume();
+    return audioCtx;
+  }
+
+  function makeClipCurve(amount) {
+    const n = 1024;
+    const curve = new Float32Array(n);
+    for (let i = 0; i < n; i++) {
+      const x = (i / (n - 1)) * 2 - 1;
+      curve[i] = Math.tanh(amount * x) / Math.tanh(amount);
+    }
+    return curve;
+  }
+
+  function makeNoiseBuffer(ctx) {
+    const len = ctx.sampleRate * 1;
+    const buf = ctx.createBuffer(1, len, ctx.sampleRate);
+    const data = buf.getChannelData(0);
+    for (let i = 0; i < len; i++) data[i] = Math.random() * 2 - 1;
+    return buf;
+  }
+
+  // one "horn body": two close, slightly detuned oscillators (real horns are
+  // never a single pure tone) run through a bandpass filter, plus a thin
+  // layer of filtered noise for the reedy/buzzy diaphragm edge.
+  function hornVoice(ctx, {freq, detune = 6, type = 'sawtooth', start, dur,
+                           peak = 0.35, filterFreq = null, filterQ = 3,
+                           freqEnd = null, noise = 0.12, attack = 0.008}) {
+    const bus = ctx.createGain();
+    bus.gain.setValueAtTime(0, start);
+    bus.gain.linearRampToValueAtTime(peak, start + attack);
+    bus.gain.exponentialRampToValueAtTime(0.0008, start + dur);
+
+    const bp = ctx.createBiquadFilter();
+    bp.type = 'bandpass';
+    bp.frequency.value = filterFreq || freq * 2.2;
+    bp.Q.value = filterQ;
+    bus.connect(bp).connect(masterBus);
+
+    [-detune, detune].forEach(d => {
+      const osc = ctx.createOscillator();
+      osc.type = type;
+      osc.detune.value = d * 3;
+      osc.frequency.setValueAtTime(freq, start);
+      if (freqEnd !== null) osc.frequency.linearRampToValueAtTime(freqEnd, start + dur);
+      osc.connect(bus);
+      osc.start(start);
+      osc.stop(start + dur + 0.03);
+    });
+
+    if (noise > 0) {
+      const src = ctx.createBufferSource();
+      src.buffer = noiseBuffer;
+      const nGain = ctx.createGain();
+      nGain.gain.setValueAtTime(0, start);
+      nGain.gain.linearRampToValueAtTime(peak * noise, start + attack);
+      nGain.gain.exponentialRampToValueAtTime(0.0006, start + dur * 0.7);
+      const nFilter = ctx.createBiquadFilter();
+      nFilter.type = 'bandpass';
+      nFilter.frequency.value = (filterFreq || freq * 2.2);
+      nFilter.Q.value = 1.2;
+      src.connect(nFilter).connect(nGain).connect(masterBus);
+      src.start(start);
+      src.stop(start + dur + 0.03);
+    }
+  }
+
+  // quick slapback echo so horns feel like they're bouncing off a street,
+  // not playing dry in a vacuum
+  function echo(ctx, delaySec = 0.09, feedback = 0.18) {
+    const d = ctx.createDelay();
+    d.delayTime.value = delaySec;
+    const fb = ctx.createGain();
+    fb.gain.value = feedback;
+    masterBus.connect(d);
+    d.connect(fb).connect(d);
+    d.connect(audioCtx.destination);
+  }
+
+  function classicPoomPoom() {
+    const ctx = getCtx();
+    const t = ctx.currentTime;
+    echo(ctx);
+    hornVoice(ctx, { freq: 148, type: 'sawtooth', start: t, dur: 0.26, peak: 0.55, filterFreq: 340, noise: 0.18 });
+    hornVoice(ctx, { freq: 176, type: 'sawtooth', start: t + 0.32, dur: 0.26, peak: 0.55, filterFreq: 400, noise: 0.18 });
+  }
+
+  function filmyPeepoo() {
+    const ctx = getCtx();
+    const t = ctx.currentTime;
+    echo(ctx, 0.07, 0.15);
+    [420, 520, 640].forEach((f, i) => {
+      hornVoice(ctx, { freq: f, type: 'triangle', detune: 4, start: t + i * 0.17, dur: 0.16,
+                        peak: 0.4, filterFreq: f * 2, filterQ: 4, noise: 0.06 });
+    });
+  }
+
+  function aaooogaa() {
+    const ctx = getCtx();
+    const t = ctx.currentTime;
+    echo(ctx, 0.1, 0.2);
+    hornVoice(ctx, { freq: 100, freqEnd: 240, type: 'sawtooth', detune: 8, start: t, dur: 0.95,
+                      peak: 0.5, filterFreq: 320, filterQ: 2.5, noise: 0.22, attack: 0.05 });
+  }
+
+  function weddingHorn() {
+    const ctx = getCtx();
+    const t = ctx.currentTime;
+    echo(ctx, 0.08, 0.2);
+    [261.6, 329.6, 392.0, 523.3].forEach((f, i) => {
+      hornVoice(ctx, { freq: f, type: 'sawtooth', detune: 5, start: t + i * 0.13, dur: 0.24,
+                        peak: 0.42, filterFreq: f * 1.8, filterQ: 5, noise: 0.08 });
+    });
+  }
+
+  function vipSiren() {
+    const ctx = getCtx();
+    const t = ctx.currentTime;
+    echo(ctx, 0.1, 0.15);
+    for (let i = 0; i < 3; i++) {
+      hornVoice(ctx, { freq: 600, freqEnd: 880, type: 'sawtooth', detune: 6, start: t + i * 0.36,
+                        dur: 0.34, peak: 0.4, filterFreq: 1100, filterQ: 3, noise: 0.1, attack: 0.04 });
+    }
+  }
+
+  function rapidFire() {
+    const ctx = getCtx();
+    const t = ctx.currentTime;
+    echo(ctx, 0.06, 0.12);
+    for (let i = 0; i < 5; i++) {
+      hornVoice(ctx, { freq: 300, type: 'sawtooth', detune: 6, start: t + i * 0.14, dur: 0.09,
+                        peak: 0.5, filterFreq: 650, filterQ: 3, noise: 0.15, attack: 0.004 });
+    }
+  }
+</script>
+
+</body>
+</html>
